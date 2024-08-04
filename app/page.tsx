@@ -29,6 +29,7 @@ export default function Home() {
   const [itemName, setItemName] = useState<string>("");
   const [itemType, setItemType] = useState<string>("");
   const [itemQuantity, setItemQuantity] = useState<number | null>(null);
+  const [search, setSearch] = useState<string>("");
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, "inventory"));
@@ -83,6 +84,10 @@ export default function Home() {
   useEffect(() => {
     updateInventory();
   }, []);
+
+  const filteredInventory = inventory.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <Box
@@ -211,6 +216,9 @@ export default function Home() {
         display="flex"
         flexDirection={"row"}
         justifyContent={"space-between"}
+        alignItems={"center"}
+        width={"800px"}
+        mb={2}
       >
         <Button variant="contained" onClick={handleOpen}>
           Add new Item
@@ -219,91 +227,72 @@ export default function Home() {
         <Button variant="contained" onClick={handleRemoveOpen}>
           Remove Item
         </Button>
+
+        <TextField
+          variant="outlined"
+          placeholder="Search items"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </Box>
 
-      <Box border={"1p solid #333"}>
+      <Box border={"1px solid #333"} width="800px">
         <Box
-          width={"800px"}
+          width={"100%"}
           height={"100px"}
           bgcolor="#ADD8EE"
-          border={"solid 1px"}
+          borderBottom={"solid 1px"}
           display="flex"
           alignItems={"center"}
           justifyContent={"center"}
+          position="sticky"
+          top={0}
+          zIndex={1}
         >
           <Typography variant="h2" color="#333">
             Inventory List
           </Typography>
         </Box>
 
-        <Stack
-          width="800px"
-          height={"300px"}
-          spacing={2}
-          border={"solid 1px"}
-          overflow={"auto"}
+        <Box
+          width={"100%"}
+          borderBottom={"solid 1px"}
+          display="flex"
+          justifyContent={"space-evenly"}
+          position="sticky"
+          top={100}
+          zIndex={1}
+          bgcolor="#FFF"
         >
-          <Box
-            width={"100%"}
-            minHeight={"30px"}
-            display={"flex"}
-            flexDirection={"row"}
-            alignItems={"center"}
-            justifyContent={"space-evenly"}
-          >
-            <Box display={"flex"} flexDirection={"column"}>
-              <Typography>Item Name</Typography>
-              {inventory.map((item, index) => (
-                <Box
-                  key={index}
-                  width="100%"
-                  minHeight={"150px"}
-                  display={"flex"}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                >
-                  <Typography color="#333" textAlign={"center"}>
-                    {item.name}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-            <Box display={"flex"} flexDirection={"column"}>
-              <Typography>Quantity</Typography>
-              {inventory.map((item, index) => (
-                <Box
-                  key={index}
-                  width="100%"
-                  minHeight={"150px"}
-                  display={"flex"}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                >
-                  <Typography color="#333" textAlign={"center"}>
-                    {item.quantity}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
+          <Typography variant="h6">Item</Typography>
+          <Typography variant="h6">Quantity</Typography>
+          <Typography variant="h6">Type</Typography>
+        </Box>
 
-            <Box display={"flex"} flexDirection={"column"}>
-              <Typography>Type</Typography>
-              {inventory.map((item, index) => (
-                <Box
-                  key={index}
-                  width="100%"
-                  minHeight={"150px"}
-                  display={"flex"}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                >
-                  <Typography color="#333" textAlign={"center"}>
-                    {item.type}
-                  </Typography>
-                </Box>
-              ))}
+        <Stack width="100%" height={"400px"} spacing={2} overflow={"auto"}>
+          {filteredInventory.map((item, index) => (
+            <Box
+              key={index}
+              width="100%"
+              minHeight={"30px"}
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"space-evenly"}
+              borderBottom={"solid 1px"}
+              paddingY={2}
+            >
+              <Typography color="#333" textAlign={"center"}>
+                {item.name}
+              </Typography>
+              <Typography color="#333" textAlign={"center"}>
+                {item.quantity}
+              </Typography>
+              <Typography color="#333" textAlign={"center"}>
+                {item.type}
+              </Typography>
             </Box>
-          </Box>
+          ))}
         </Stack>
       </Box>
     </Box>
